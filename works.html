@@ -4,20 +4,6 @@
     <meta charset="utf-8">
     <title>Street View controls</title>
     <style>
-#formlayout
-{
-text-align:center;
-}
-h1, #instructions{text-align: center;}
-img{display: block; margin-left:auto; margin-right:auto; padding-top:50px;}
-html
-{
-background: url(background.jpg) no-repeat center center fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-}
       html, body, #map-canvas {
         height: 100%;
         margin: 0px;
@@ -25,47 +11,20 @@ background: url(background.jpg) no-repeat center center fixed;
       }
     </style>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script>
-$(document).ready(function(){
-  $("#hide").click(function(){
-    $("#hid").slideUp(1200);
-  });
-});
-</script>
-
 </script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript">
 
-var difficulty = 1;
 var geocoder = new google.maps.Geocoder();
-var address = "unentered";
+var address = prompt("Give me stuff");
 var latitude = 1;
 var longitude = 2;
-var min = 300*difficulty;
-var max = 500*difficulty;
-var randomNum = getRandomInt(min,max)/100000;
-var randomNum2 = getRandomInt(min,max)/100000;
-var randomNumMod = getRandomInt(0,2);
-var randomNumMod2 = getRandomInt(0,2);
+var randomNum = getRandomInt(100,100)/100000;
+var randomNumMod = getRandomInt(0,1);
 var distanceFromHome = 100;
 var home = new google.maps.LatLng(latitude, longitude);
 var fenway = new google.maps.LatLng(latitude, longitude);
 var win = 0;
-function settings(form)
-{
-    for (Count = 0; Count < 3; Count++) {
-        if (form.rad[Count].checked)
-            break;
-    }
-difficulty += Count;
-min = 300*difficulty;
-max = 500*difficulty;
-address = form.addressInput.value;
-initialize();
-    
-}
 geocoder.geocode( { 'address': address}, function(results, status) {
 
 if (status == google.maps.GeocoderStatus.OK) {
@@ -74,38 +33,34 @@ if (status == google.maps.GeocoderStatus.OK) {
     } 
 }); 
 home = new google.maps.LatLng(latitude, longitude);
-
-latitude = randomNum + latitude;
-longitude = randomNum2 + longitude;
-
+latitude = randomNum + latitude;;
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
-
+if(randomNumMod ==0)
+{
+randomNum *=-1;
+}
+else
+{
+}
 
 function goodAdd(A,B){
 var streetViewService = new google.maps.StreetViewService();
-var STREETVIEW_MAX_DISTANCE = 50;
+var STREETVIEW_MAX_DISTANCE = 100;
 var latLng = new google.maps.LatLng(A,B);
 streetViewService.getPanoramaByLocation(latLng, STREETVIEW_MAX_DISTANCE, function (streetViewPanoramaData, status) {
-if (status == google.maps.StreetViewStatus.OK) {
+    if (status === google.maps.StreetViewStatus.OK) {
+alert("good")
     } else {
+
+        alert("bad")
        initialize();
     }
 });
 }
 
 function initialize() {
-if(randomNumMod == 0)
-{
-randomNum*=-1;
-}
-
-if(randomNumMod2 == 0)
-{
-randomNum2*=-1;
-}
-
 geocoder.geocode( { 'address': address}, function(results, status) {
 
 if (status == google.maps.GeocoderStatus.OK) {
@@ -114,9 +69,8 @@ if (status == google.maps.GeocoderStatus.OK) {
     } 
 }); 
 home = new google.maps.LatLng(latitude, longitude);
-
+goodAdd(latitude,longitude);
 latitude = randomNum + latitude;
-longitude = randomNum2+ longitude;
 
   fenway = new google.maps.LatLng(latitude, longitude);
   var panoOptions = {
@@ -133,7 +87,7 @@ longitude = randomNum2+ longitude;
   };
   var panorama = new google.maps.StreetViewPanorama(
       document.getElementById('map-canvas'), panoOptions);
-goodAdd(latitude,longitude);
+
 google.maps.event.addListener(panorama, 'pano_changed', function() {
   distanceFromHome = google.maps.geometry.spherical.computeDistanceBetween(panorama.getPosition(), home);   
 if(distanceFromHome <= 75)
@@ -144,26 +98,11 @@ alert("you win");
 
 }
 
-//google.maps.event.addDomListener(window, 'load', initialize);
+google.maps.event.addDomListener(window, 'load', initialize);
 
     </script>
-
-
   </head>
   <body>
-<div id="hid">
-<img src="title.png" width=50% height=50% />
-<p id="instructions">Do you think you know the area surrounding where you live? Select a difficulty, enter your address, and find out<p>
-<FORM NAME="testform" id="formlayout">
-<INPUT TYPE="radio" NAME="rad" Value="rad_button1" onClick=0>Easy<BR>
-<INPUT TYPE="radio" NAME="rad" Value="rad_button2" onClick=0>Medium<BR>
-<INPUT TYPE="radio" NAME="rad" Value="rad_button3" onClick=0>Hard<BR>
-<input type="text" name="addressInput" value=""><br>Address<br><br><br>
-<INPUT TYPE="button" NAME="button" Value="Begin" id="hide"  
-    onClick="settings(this.form)"> <BR>
-</FORM>
-</div>
     <div id="map-canvas"></div>
   </body>
-
 </html>
